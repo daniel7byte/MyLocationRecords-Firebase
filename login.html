@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Login - Daniel7Byte</title>
+  <script src="assets/js/jquery-3.2.1.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/4.0.0/firebase.js"></script>
+  <link rel="stylesheet" href="assets/css/flatly.min.css">
+</head>
+<body>
+  
+  <div class="container">
+    <div id="form" class="form-horizontal">
+      <div class="form-group">
+        <label class="col-sm-2 control-label">Login: </label>
+        <div class="col-sm-10">
+          <div class="input-group">
+            <input id="txtEmail" class="form-control" type="email"/>
+            <input id="txtPassword" class="form-control" type="password"/>
+          </div>
+        </div>
+      </div>
+      <button id = "btnLogin" class="btn btn-action">Login</button>
+      <button id = "btnSignUp" class="btn btn-secondary">Registrarse</button>
+      <button id = "btnLogout" class="btn btn-action hide">Logout</button>
+    </div>
+  </div>
+
+  <script src="assets/js/app.js"></script>
+  <script>
+    // Obtener elementos
+    const txtEmail = $('#txtEmail');
+    const txtPassword = $('#txtPassword');
+    const btnLogin = $('#btnLogin');
+    const btnSignUp = $('#btnSignUp');
+    const btnLogout = $('#btnLogout');
+
+    // Añadir Evento login
+    btnLogin.click(e => {
+      //Obtener email y pass
+      const email = txtEmail.val();
+      const pass = txtPassword.val();
+      const auth = firebase.auth();
+      // Sign in
+      const promise = auth.signInWithEmailAndPassword(email, pass);
+      promise.catch(e => console.log(e.message));   
+    });
+
+    // Añadir evento signup
+    
+    btnSignUp.click(e => {
+      // Obtener email y pass
+      // TODO: comprobar que el email sea real
+      const email = txtEmail.val();
+      const pass = txtPassword.val();
+      const auth = firebase.auth();
+      // Sign in
+      const promise = auth.createUserWithEmailAndPassword(email, pass);
+      promise.catch(e => console.log(e.message));
+    });
+
+    btnLogout.click(e => {
+      firebase.auth().signOut();
+    });
+
+    // Añadir un listener en tiempo real
+    firebase.auth().onAuthStateChanged( firebaseUser => {
+      if(firebaseUser) {
+        console.log(firebaseUser);
+        btnLogout.removeClass('hide');
+        btnSignUp.addClass('hide');
+      } else {
+        console.log('No logueado');
+        btnSignUp.removeClass('hide');
+        btnLogout.addClass('hide');
+      }    
+    });
+
+  </script>
+</body>
+</html>

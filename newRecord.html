@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>New Record - Daniel7Byte</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="assets/css/flatly.min.css">
+  <style>
+    #map {
+      height:250px;
+      background:#6699cc;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <h1>New Record</h1>
+
+    <hr>
+
+    <p><strong>Map:</strong></p>
+    <div id="map"></div>
+
+    <hr>
+
+    <div id="form" class="form-horizontal">
+  
+      <p><strong>User: </strong><span id="user"></span></p>
+
+      <div class="form-group">
+        <label class="col-sm-2 control-label">Description: </label>
+        <div class="col-sm-10">
+          <textarea id="description" class="form-control" rows="2"></textarea>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-2 control-label">Coordinates: </label>
+        <div class="col-sm-10">
+          <div class="input-group">
+            <span class="input-group-addon">Lat: </span>
+            <input id="lat" type="text" class="form-control">
+            <span class="input-group-addon">Lng: </span>
+            <input id="lng" type="text" class="form-control">
+          </div>
+        </div>
+      </div>
+
+      <button id="newRecord" class="btn-block btn btn-success hide">Create</button>
+
+      <hr>
+
+    </div>
+
+  </div>
+
+
+
+  <script src="assets/js/jquery-3.2.1.min.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOCUXu0rKsisWWrHsvgglxF0JEHLUJYOE"></script>
+  <script src="assets/js/gmaps.js"></script>
+  <script>
+    var map;
+    function geolocalize() {
+      map = new GMaps({
+        div: '#map',
+        lat: 0,
+        lng: 0
+      });
+
+      GMaps.geolocate({
+        success: function(position){
+          map.setCenter(position.coords.latitude, position.coords.longitude);
+          
+
+          $('#lat').val(position.coords.latitude);
+          $('#lng').val(position.coords.longitude);
+          
+          map.addMarker({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+            draggable: true,
+            click: function(e) {
+              alert("I'm Here!");
+            },
+            dragend: function(e) {
+              $('#lat').val(this.position.lat);
+              $('#lng').val(this.position.lng);
+            }
+          });
+
+        },
+        error: function(error){
+          console.log('Geolocation failed: '+error.message);
+        },
+        not_supported: function(){
+          console.log("Your browser does not support geolocation");
+        },
+        always: function(){
+          console.log("Done!");
+        }
+      });
+    }
+  </script>
+  
+  <script src="https://www.gstatic.com/firebasejs/4.0.0/firebase.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script>
+    const database = firebase.database();
+
+    const dbRef = database.ref();
+    const dbRefRecords = dbRef.child('records');
+
+    firebase.auth().onAuthStateChanged( firebaseUser => {
+      if(firebaseUser) {
+        console.log("👍");
+        geolocalize();
+        $('#newRecord').removeClass('hide');
+        $('#user').html(firebaseUser.email);
+      } else {
+        console.log("👎");
+        alert('Denied!');
+      }    
+    });
+
+    $('#newRecord').click(e => {
+
+      var authUser = firebase.auth().currentUser;
+
+      var lat = $('#lat').val();
+      var lng = $('#lng').val();
+      var description = $('#description').val();
+
+      dbRefRecords.push({
+        user: authUser.email,
+        lat: lat,
+        lng: lng,
+        description : description
+      });
+
+      alert("Completed! 👍");
+
+      // Reset
+      clearInputs();
+      geolocalize();
+
+    });
+
+    function clearInputs() {
+      $('#lat').val(null);
+      $('#lng').val(null);
+      $('#description').val(null);
+    }
+
+  </script>
+</body>
+</html>

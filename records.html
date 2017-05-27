@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Home - Daniel7Byte</title>
+  <script src="assets/js/jquery-3.2.1.min.js"></script>
+  <link rel="stylesheet" href="assets/css/flatly.min.css">
+  <style>
+    .map {
+      height:250px;
+      background:#6699cc;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="col-md-12">
+      <h2>Records</h2>
+      <hr>
+      <div id="records"></div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/4.0.0/firebase.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script>
+    const database = firebase.database();
+
+    const dbRefRecords = database.ref().child('records');
+
+    dbRefRecords.on('child_added', snap => {
+      console.log("Item Added: " + snap.val().user);
+
+      var content = '<strong>' + snap.val().user + '</strong>'
+      + '<p>' + snap.val().description + '</p>'
+      + '<div class="map"></div>'
+      + '<br><button class="btn btn-xs btn-danger" onclick="eliminar('+"'"+snap.key+"'"+')">Delete! </button>'
+      + '<hr>';
+
+      var log = $('<div id="'+snap.key+'"></div>').html(content);
+
+      $('#records').append(log);
+    });
+
+    dbRefRecords.on('child_removed', snap => {
+      console.log("Item Deleted: " + snap.val());
+      const liToRemove = $('#' + snap.key);
+      liToRemove.remove();
+    });
+
+    function eliminar(fullKey){
+      dbRefRecords.ref.child(fullKey).remove();
+    }
+
+    firebase.auth().onAuthStateChanged( firebaseUser => {
+      if(firebaseUser) {
+        console.log("👍");
+      } else {
+        console.log("👎");
+      }    
+    });
+  </script>
+</body>
+</html>
