@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <title>Home - Daniel7Byte</title>
-  <script src="assets/js/jquery-3.2.1.min.js"></script>
   <link rel="stylesheet" href="assets/css/flatly.min.css">
   <style>
     .map {
@@ -22,25 +21,51 @@
     </div>
   </div>
 
+  
+  <script src="assets/js/jquery-3.2.1.min.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOCUXu0rKsisWWrHsvgglxF0JEHLUJYOE"></script>
+  <script src="assets/js/gmaps.js"></script>
+  <script>
+    function createMap(key, lat, lng) {
+      var keyDiv = '#' + key + '_map';
+      key = new GMaps({
+        div: keyDiv,
+        lat: lat,
+        lng: lng
+      });
+
+      key.addMarker({
+        lat: lat,
+        lng: lng,
+        click: function(e) {
+          alert("It's Here!");
+        }
+      });
+    }
+  </script>
+
+
   <script src="https://www.gstatic.com/firebasejs/4.0.0/firebase.js"></script>
   <script src="assets/js/app.js"></script>
   <script>
     const database = firebase.database();
 
-    const dbRefRecords = database.ref().child('records');
+    const dbRefRecords = database.ref('records');
 
-    dbRefRecords.on('child_added', snap => {
+    dbRefRecords.orderByKey().on('child_added', snap => {
       console.log("Item Added: " + snap.val().user);
 
       var content = '<strong>' + snap.val().user + '</strong>'
       + '<p>' + snap.val().description + '</p>'
-      + '<div class="map"></div>'
+      + '<div id="'+snap.key+'_map" class="map"></div>'
       + '<br><button class="btn btn-xs btn-danger" onclick="eliminar('+"'"+snap.key+"'"+')">Delete! </button>'
       + '<hr>';
 
       var log = $('<div id="'+snap.key+'"></div>').html(content);
 
       $('#records').append(log);
+
+      createMap(snap.key, snap.val().lat, snap.val().lng);
     });
 
     dbRefRecords.on('child_removed', snap => {
