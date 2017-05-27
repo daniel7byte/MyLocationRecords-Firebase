@@ -11,19 +11,26 @@
 <body>
   
   <div class="container">
-    <div id="form" class="form-horizontal">
-      <div class="form-group">
-        <label class="col-sm-2 control-label">Login: </label>
-        <div class="col-sm-10">
-          <div class="input-group">
-            <input id="txtEmail" class="form-control" type="email"/>
-            <input id="txtPassword" class="form-control" type="password"/>
+    <div class="row">
+      <div class="col-md-6">
+        <h1>Login</h1>
+        <hr>
+        <div id="form" class="form-horizontal">
+          <div class="form-group">
+            <div class="input-group">
+              <input id="txtEmail" class="form-control" placeholder="E-mail" type="email"/>
+              <span class="input-group-addon">|</span>
+              <input id="txtPassword" class="form-control" placeholder="Password" type="password"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <button id="btnLogin" class="btn-block btn btn-default">Login</button>
+            <button id="btnSignUp" class="btn-block btn btn-default">Registrarse</button>
+            <button id="btnLogout" class="btn-block btn btn-default hide">Logout</button>
+            <a id="home" href="newRecord.html" class="btn-block btn btn-primary hide">Home</a>
           </div>
         </div>
       </div>
-      <button id = "btnLogin" class="btn btn-action">Login</button>
-      <button id = "btnSignUp" class="btn btn-secondary">Registrarse</button>
-      <button id = "btnLogout" class="btn btn-action hide">Logout</button>
     </div>
   </div>
 
@@ -68,11 +75,13 @@
     firebase.auth().onAuthStateChanged( firebaseUser => {
       if(firebaseUser) {
         console.log(firebaseUser);
+        $('#home').removeClass('hide');
         btnLogout.removeClass('hide');
         btnSignUp.addClass('hide');
         btnLogin.addClass('hide');
       } else {
         console.log('No logueado');
+        $('#home').addClass('hide');
         btnSignUp.removeClass('hide');
         btnLogout.addClass('hide');
         btnLogin.removeClass('hide');
