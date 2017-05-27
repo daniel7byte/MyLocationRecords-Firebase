@@ -69,10 +69,12 @@
         console.log(firebaseUser);
         btnLogout.removeClass('hide');
         btnSignUp.addClass('hide');
+        btnLogin.addClass('hide');
       } else {
         console.log('No logueado');
         btnSignUp.removeClass('hide');
         btnLogout.addClass('hide');
+        btnLogin.removeClass('hide');
       }    
     });
 
