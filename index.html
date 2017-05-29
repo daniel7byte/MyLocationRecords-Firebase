@@ -15,8 +15,8 @@
       <div class="col-md-6">
         <h1>Login</h1>
         <hr>
-        <div id="form" class="form-horizontal">
-          <div class="form-group">
+        <div class="form-horizontal">
+          <div class="form-group hide" id="form">
             <div class="input-group">
               <input id="txtEmail" class="form-control" placeholder="E-mail" type="email"/>
               <span class="input-group-addon">|</span>
@@ -24,10 +24,10 @@
             </div>
           </div>
           <div class="form-group">
+            <a id="home" href="newRecord.html" class="btn-block btn btn-primary hide">Home</a>
             <button id="btnLogin" class="btn-block btn btn-default">Login</button>
             <button id="btnSignUp" class="btn-block btn btn-default">Registrarse</button>
             <button id="btnLogout" class="btn-block btn btn-default hide">Logout</button>
-            <a id="home" href="newRecord.html" class="btn-block btn btn-primary hide">Home</a>
           </div>
         </div>
       </div>
@@ -75,12 +75,14 @@
     firebase.auth().onAuthStateChanged( firebaseUser => {
       if(firebaseUser) {
         console.log(firebaseUser);
+        $('#form').addClass('hide');
         $('#home').removeClass('hide');
         btnLogout.removeClass('hide');
         btnSignUp.addClass('hide');
         btnLogin.addClass('hide');
       } else {
         console.log('No logueado');
+        $('#form').removeClass('hide');
         $('#home').addClass('hide');
         btnSignUp.removeClass('hide');
         btnLogout.addClass('hide');
