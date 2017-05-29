@@ -56,7 +56,11 @@
     dbRefRecords.orderByChild('timestamp').on('child_added', snap => {
       console.log("Item Added: " + snap.val().user);
 
+      var tmp = Math.abs(snap.val().timestamp);
+      var timestamp = new Date(tmp);
+
       var content = '<strong>' + snap.val().user + '</strong>'
+      + '<span>' + timestamp.toUTCString() + '</span>'
       + '<p>' + snap.val().description + '</p>'
       + '<div id="'+snap.key+'_map" class="map"></div>'
       + '<br><button class="btn btn-xs btn-danger" onclick="eliminar('+"'"+snap.key+"'"+')">Delete! </button>'
