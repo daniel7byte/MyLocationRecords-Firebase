@@ -133,7 +133,7 @@
 
     $('#newRecord').click(e => {
 
-      var timestamp = new Date().getTime();
+      var timestamp = 0 - Date.now();
 
       var authUser = firebase.auth().currentUser;
 
