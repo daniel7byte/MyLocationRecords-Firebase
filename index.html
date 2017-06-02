@@ -9,14 +9,14 @@
   <script src="https://www.gstatic.com/firebasejs/4.0.0/firebase.js"></script>
 </head>
 <body>
-  
+
   <div class="container">
     <div class="row">
       <div class="col-md-6">
         <h1>Login</h1>
-        <hr>
         <div class="form-horizontal">
           <div class="form-group hide" id="form">
+            <hr>
             <div class="input-group">
               <input id="txtEmail" class="form-control" placeholder="E-mail" type="email"/>
               <span class="input-group-addon">|</span>
@@ -26,14 +26,17 @@
           <div class="form-group">
             <a id="home" href="newRecord.html" class="btn-block btn btn-primary hide">Home</a>
             <button id="btnLogin" class="btn-block btn btn-default">Login</button>
-            <button id="btnSignUp" class="btn-block btn btn-default">Registrarse</button>
             <button id="btnLogout" class="btn-block btn btn-default hide">Logout</button>
+            <button id="btnSignUp" class="btn-block btn btn-default">Registrarse</button>
+            <hr>
+            <button disabled id="btnSignUpGoogle" class="btn-block btn btn-success">with Google</button>
           </div>
         </div>
       </div>
     </div>
   </div>
 
+  <script src="https://apis.google.com/js/platform.js"></script>
   <script src="assets/js/app.js"></script>
   <script>
     // Obtener elementos
@@ -41,6 +44,7 @@
     const txtPassword = $('#txtPassword');
     const btnLogin = $('#btnLogin');
     const btnSignUp = $('#btnSignUp');
+    const btnSignUpGoogle = $('#btnSignUpGoogle');
     const btnLogout = $('#btnLogout');
 
     // Añadir Evento login
@@ -51,11 +55,11 @@
       const auth = firebase.auth();
       // Sign in
       const promise = auth.signInWithEmailAndPassword(email, pass);
-      promise.catch(e => console.log(e.message));   
+      promise.catch(e => console.log(e.message));
     });
 
     // Añadir evento signup
-    
+
     btnSignUp.click(e => {
       // Obtener email y pass
       // TODO: comprobar que el email sea real
@@ -65,6 +69,48 @@
       // Sign in
       const promise = auth.createUserWithEmailAndPassword(email, pass);
       promise.catch(e => console.log(e.message));
+    });
+
+    btnSignUpGoogle.click(e => {
+      if (!firebase.auth().currentUser) {
+        // [START createprovider]
+        var provider = new firebase.auth.GoogleAuthProvider();
+        // [END createprovider]
+        // [START addscopes]
+        provider.addScope('https://www.googleapis.com/auth/plus.login');
+        // [END addscopes]
+        // [START signin]
+        firebase.auth().signInWithPopup(provider).then(function(result) {
+          // This gives you a Google Access Token. You can use it to access the Google API.
+          var token = result.credential.accessToken;
+          // The signed-in user info.
+          var user = result.user;
+          // [START_EXCLUDE]
+          console.log(token);
+          // [END_EXCLUDE]
+        }).catch(function(error) {
+          // Handle Errors here.
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          // The email of the user's account used.
+          var email = error.email;
+          // The firebase.auth.AuthCredential type that was used.
+          var credential = error.credential;
+          // [START_EXCLUDE]
+          if (errorCode === 'auth/account-exists-with-different-credential') {
+            alert('You have already signed up with a different auth provider for that email.');
+            // If you are using multiple auth providers on your app you should handle linking
+            // the user's accounts here.
+          } else {
+            console.error(error);
+          }
+          // [END_EXCLUDE]
+        });
+        // [END signin]
+      }
+      // [START_EXCLUDE]
+      document.getElementById('btnSignUpGoogle').disabled = true;
+      // [END_EXCLUDE]
     });
 
     btnLogout.click(e => {
@@ -80,6 +126,8 @@
         btnLogout.removeClass('hide');
         btnSignUp.addClass('hide');
         btnLogin.addClass('hide');
+        btnSignUpGoogle.addClass('hide');
+        document.getElementById('btnSignUpGoogle').disabled = true;
       } else {
         console.log('No logueado');
         $('#form').removeClass('hide');
@@ -87,7 +135,9 @@
         btnSignUp.removeClass('hide');
         btnLogout.addClass('hide');
         btnLogin.removeClass('hide');
-      }    
+        btnSignUpGoogle.removeClass('hide');
+        document.getElementById('btnSignUpGoogle').disabled = false;
+      }
     });
 
   </script>
